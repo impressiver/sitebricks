@@ -25,8 +25,10 @@ import com.google.sitebricks.http.negotiate.ContentNegotiator;
 import com.google.sitebricks.http.negotiate.Negotiation;
 import com.google.sitebricks.rendering.Strings;
 import com.google.sitebricks.rendering.control.DecorateWidget;
+
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -36,6 +38,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +53,40 @@ import java.util.concurrent.atomic.AtomicReference;
 @ThreadSafe @Singleton
 public class DefaultPageBook implements PageBook {
   //multimaps TODO refactor to multimap?
+
+  // Sorts the page tuples such that "/foo/bar/baz" matches before the greedy "/foo/bar/:var"
+  private static final Comparator<PageTuple> PAGE_TUPLE_COMPARATOR = new Comparator<PageTuple>() {
+    @Override
+    public int compare(PageTuple page1, PageTuple page2) {
+      String uri1 = page1.getUri();
+      String uri2 = page2.getUri();
+
+      if (countMatches(uri1, "/") != countMatches(uri2, "/")) {
+        return countMatches(uri1, "/") - countMatches(uri2, "/");
+      } else if (uri1.contains("/:") || uri2.contains("/:")) {
+        if (uri1.contains("/:") && uri2.contains("/:") && uri1.lastIndexOf("/:") != uri2.lastIndexOf("/:")) {
+          return uri1.lastIndexOf("/:") - uri2.lastIndexOf("/:");
+        } else if (uri1.contains("/:") ^ uri2.contains("/:")) {
+          return uri1.contains("/:") ? 1 : -1;
+        }
+      }
+
+      return page1.compareTo(page2);
+    }
+
+    private int countMatches(String str, String sub) {
+      if (str == null || str.length() == 0 || sub == null || sub.length() == 0) {
+        return 0;
+      }
+      int count = 0;
+      int idx = 0;
+      while ((idx = str.indexOf(sub, idx)) != -1) {
+        count++;
+        idx += sub.length();
+      }
+      return count;
+    }
+  };
 
   @GuardedBy("lock") // All three following fields
   private final Map<String, List<PageTuple>> pages = Maps.newHashMap();
@@ -207,6 +244,7 @@ public class DefaultPageBook implements PageBook {
     }
 
     list.add(page);
+    Collections.sort(list, PAGE_TUPLE_COMPARATOR);
   }
 
   private static boolean isVariable(String key) {

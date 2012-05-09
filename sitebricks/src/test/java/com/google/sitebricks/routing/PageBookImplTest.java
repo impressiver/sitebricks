@@ -4,21 +4,27 @@ import com.google.common.collect.Iterators;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
-import com.google.sitebricks.*;
+import com.google.sitebricks.At;
+import com.google.sitebricks.Renderable;
+import com.google.sitebricks.Respond;
+import com.google.sitebricks.SitebricksModule;
+import com.google.sitebricks.TestRequestCreator;
 import com.google.sitebricks.headless.Request;
 import com.google.sitebricks.http.Get;
 import com.google.sitebricks.http.Post;
 import com.google.sitebricks.http.Select;
 import com.google.sitebricks.rendering.EmbedAs;
+
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -516,7 +522,9 @@ public class PageBookImplTest {
     pageBook.at(template, MyPage.class);
 
     //cant find
-    assert null == pageBook.get(toMatch);
+    PageBook.Page match = pageBook.get(toMatch);
+
+    assert match == null : "\"" + match.getUri() + "\" matched \"" + toMatch + "\"";
 
   }
 
