@@ -25,19 +25,19 @@ public class DefaultTemplateSystem implements TemplateSystem {
 
   @Override
   public String[] getTemplateExtensions() {
-      Set<String> keys = templateCompilers.keySet();
+    Set<String> keys = templateCompilers.keySet();
 
-      if (keys.isEmpty()) {
-          return new String[0];
-      }
+    if (keys.isEmpty()) {
+      return new String[0];
+    }
 
-      String[] extensions = new String[keys.size()];
+    String[] extensions = new String[keys.size()];
 
-      int i = 0;
-      for (String ext : keys) {
-         extensions[i++] = "%s." + ext;
-      }
+    int i = 0;
+    for (String ext : keys) {
+      extensions[i++] = "%s." + ext;
+    }
 
-      return extensions;
-  }  
+    return extensions;
+  }
 }

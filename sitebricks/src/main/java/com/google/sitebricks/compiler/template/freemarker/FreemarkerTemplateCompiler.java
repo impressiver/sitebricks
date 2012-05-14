@@ -3,6 +3,7 @@ package com.google.sitebricks.compiler.template.freemarker;
 import com.google.inject.Singleton;
 import com.google.sitebricks.compiler.TemplateCompiler;
 import com.google.sitebricks.compiler.template.AbstractMagicTemplateCompiler;
+
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -17,41 +18,42 @@ import java.io.Writer;
 @Singleton
 public class FreemarkerTemplateCompiler extends AbstractMagicTemplateCompiler implements TemplateCompiler {
 
-    @Override
-    public String process(Class<?> page, Object bound, com.google.sitebricks.Template sitebricksTemplate) {
+  @Override
+  public String process(Class<?> page, Object bound, com.google.sitebricks.Template sitebricksTemplate) {
 
-        final Template template = getTemplate(page, sitebricksTemplate);
+    final Template template = getTemplate(page, sitebricksTemplate);
 
-        // pick type
-        // transform to xhtml
-        // produce output
+    // pick type
+    // transform to xhtml
+    // produce output
 
-        Writer writer = new StringWriter();
-        try {
-            template.process(bound, writer);
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return writer.toString();
+    Writer writer = new StringWriter();
+    try {
+      template.process(bound, writer);
+    } catch (TemplateException e) {
+      throw new RuntimeException(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
 
-    private Template getTemplate(Class<?> page, com.google.sitebricks.Template sitebricksTemplate) {
-        Configuration configuration = new Configuration();
-        configuration.setTemplateExceptionHandler(new SitebricksTemplateExceptionHandler());
+    return writer.toString();
+  }
 
-        try {
-            return new Template(page.getName(), new StringReader(sitebricksTemplate.getText()), configuration);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+  private Template getTemplate(Class<?> page, com.google.sitebricks.Template sitebricksTemplate) {
+    Configuration configuration = new Configuration();
+    configuration.setTemplateExceptionHandler(new SitebricksTemplateExceptionHandler());
 
-    class SitebricksTemplateExceptionHandler implements TemplateExceptionHandler {
-        public void handleTemplateException(TemplateException te, Environment env, Writer out) throws TemplateException {
-            // We intentionally do nothing here
-        }
+    try {
+      return new Template(page.getName(), new StringReader(sitebricksTemplate.getText()), configuration);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
+
+  class SitebricksTemplateExceptionHandler implements TemplateExceptionHandler {
+
+    public void handleTemplateException(TemplateException te, Environment env, Writer out) throws TemplateException {
+      // We intentionally do nothing here
+    }
+  }
 }

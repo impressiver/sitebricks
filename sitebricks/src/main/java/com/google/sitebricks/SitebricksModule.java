@@ -134,12 +134,12 @@ public class SitebricksModule extends AbstractModule implements PageBinder {
   }
 
   protected void configureTemplateCompilers(MapBinder<String, TemplateCompiler> compilers) {
-      // Override to include custom template compilers. You can also simply add to the existing MapBinder
-      // mapping anywhere in your modules (see: http://code.google.com/p/google-guice/wiki/Multibindings):
-      //    MapBinder<String,TemplateCompiler> templateCompilers = MapBinder.newMapBinder(binder(), String.class, TemplateCompiler.class);
-      //    templateCompilers.addBinding("mustache").to(MustacheTemplateCompiler.class);
+    // Override to include custom template compilers. You can also simply add to the existing MapBinder
+    // mapping anywhere in your modules (see: http://code.google.com/p/google-guice/wiki/Multibindings):
+    //  MapBinder<String,TemplateCompiler> templateCompilers = MapBinder.newMapBinder(binder(), String.class, TemplateCompiler.class);
+    //  templateCompilers.addBinding("mustache").to(MustacheTemplateCompiler.class);
   }
-  
+
   /**
    * Optionally supply {@link javax.servlet.Servlet} and/or {@link javax.servlet.Filter} implementations to
    * Guice Servlet. See {@link com.google.sitebricks.SitebricksServletModule} for usage examples.
